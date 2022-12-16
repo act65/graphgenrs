@@ -3,13 +3,7 @@ use std::cmp;
 use itertools::{sorted, izip};
 use itertools::Itertools;
 
-use std::fs::File;
-use std::io::LineWriter;
-
-
 const SIZE: usize = 256;
-const SAVEPATH: &'static str = "/tmp/test.txt";
-
 
 #[derive(Copy, Clone, Debug, Eq)]
 struct Edge {
@@ -162,18 +156,11 @@ impl Ord for Graph {
     }
 }
 
-fn is_max_edge(e: &Edge, n: &u8) -> bool {
-    if (e.i >= n-1) & (e.j >= *n) {true}
-    else {false}
-}
-
 fn is_canonical(g: &Graph) -> bool {
-    for perm in Itertools::permutations((0..g.n_nodes), (g.n_nodes) as usize) {
-        // dont need to both w the first perm. [0,1,2,3,4,5...]
+    for perm in Itertools::permutations(0..g.n_nodes, g.n_nodes as usize) {
+        // NOTE dont need to bother w the first perm. [0,1,2,3,4,5...]
 
-        // let g_ = g.permute(perm);
         let g_ = permute(g, perm);
-        // let g_ = g.clone();
         if Graph::lt(&g_, &g) {
             return false
         }
@@ -182,7 +169,6 @@ fn is_canonical(g: &Graph) -> bool {
 }
 
 fn does_satisfy_constraints(g: &Graph) -> bool {
-    // return g.n_edges == 3
     return false
 }
 
@@ -190,18 +176,14 @@ fn could_satisfy_constraints(g: &Graph) -> bool {
     return true
 }
 
-fn write_to_file(g: &Graph) {
-    let mut edge_list: Vec<Edge> = Vec::new();
+fn pretty_print(g: &Graph) {
+    let mut edge_list: Vec<String> = Vec::new();
+    // only want the non-zero edges
     for i in 0..g.n_edges {
-        edge_list.push(g.edge_list[i as usize]);
-        // s += str(g.edge_list[i as usize]);
+        let s = format!("{:?}", g.edge_list[i as usize]);
+        edge_list.push(s);
     }
-    let s = format!("{:?}", edge_list);
-    println!("{}", s);
-
-    // let file = File::create(SAVEPATH);
-    // let mut file = LineWriter::new(file);
-
+    println!("{:?}", edge_list);
 }
 
 fn successor(e: &Edge, n: &u8) -> Option<Edge> {
@@ -214,17 +196,17 @@ fn successor(e: &Edge, n: &u8) -> Option<Edge> {
 
 fn graphgen(g: Graph, n: u8) {
     // how to control the order that the graphs are explored?
-    // does this work depth first?
+    // this does depth first?
     if is_canonical(&g) {
+        pretty_print(&g);
         if does_satisfy_constraints(&g) {
-            write_to_file(&g);
+            {}
         } else if could_satisfy_constraints(&g) {
             let mut current_edge = g.max_edge.clone();
             while let Some(e) = successor(&current_edge, &(n-1)) {
                 let mut g_ = g.clone();
                 g_.append(e);
                 graphgen(g_, n);
-                write_to_file(&g_);
                 current_edge = e;
             }
 
@@ -256,17 +238,17 @@ mod tests {
         assert_eq!(edge_list.iter().max().unwrap(), &e4);
     }
 
-    #[test]
-    fn test_sorted_edge_list() {
-        let e1 = Edge::new(1, 2);
-        let e2 = Edge::new(2, 3);
-        let e3 = Edge::new(8, 5);
-        let e4 = Edge::new(7, 6);
+    // #[test]
+    // fn test_sorted_edge_list() {
+    //     let e1 = Edge::new(1, 2);
+    //     let e2 = Edge::new(2, 3);
+    //     let e3 = Edge::new(8, 5);
+    //     let e4 = Edge::new(7, 6);
 
-        let edge_list = [e1, e2, e3, e4];
+    //     let edge_list = [e1, e2, e3, e4];
 
-        // assert_eq!(sorted(edge_list), edge_list.iter());
-    }
+    //     assert_eq!(sorted(edge_list), edge_list.iter());
+    // }
 
     #[test]
     fn test_new_graph() {
@@ -327,10 +309,55 @@ mod tests {
         println!("{:?}", g2);
 
     }
+
+    #[test]
+    fn test_canonical() {
+        let e1 = Edge::new(0, 1);
+        let e2 = Edge::new(1, 2);
+        let e3 = Edge::new(0, 2);
+
+        let g1 = Graph::new(vec![e1, e2], 3);
+        let g2 = Graph::new(vec![e1, e3], 3);
+
+        assert_eq!(is_canonical(&g1), !is_canonical(&g2));
+    }
+
+    #[test]
+    fn test_example() {
+
+        let e1 = Edge::new(0, 1);
+        let e2 = Edge::new(0, 2);
+        let e3 = Edge::new(0, 3);
+        let e4 = Edge::new(1, 2);
+        let e5 = Edge::new(1, 3);
+        let e6 = Edge::new(2, 3);
+
+        let g1 = Graph::new(vec![e1, e2, e3, e4, e5], 4);
+        let g2 = Graph::new(vec![e1, e2, e3, e4, e6], 4);
+
+        let g3 = permute(&g2, vec![0, 2, 1, 3]);
+
+        assert_eq!(Graph::eq(&g1, &g2), false);
+        assert_eq!(Graph::eq(&g1, &g3), true);
+
+        println!("{:?}", Graph::lt(&g1, &g2));
+        println!("{:?}", Graph::lt(&g1, &g3));
+
+        //  only 1 of these can be canonical?!?
+        assert_eq!(is_canonical(&g1), !is_canonical(&g2));
+
+    }
+
+    // #[test]
+    // fn test_all_permutations() {
+    //     for perm in Itertools::permutations((0..4), (4) as usize) {
+    //         println!("{:?}", perm);
+    //     }
+    // }
 }
 
 fn main() {
-    let n = 3;
+    let n = 4;
     let g = Graph::new(vec![Edge::new(0, 1)], n);
     graphgen(g, n);
 }
