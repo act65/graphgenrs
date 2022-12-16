@@ -168,7 +168,6 @@ fn is_max_edge(e: &Edge, n: &u8) -> bool {
 }
 
 fn is_canonical(g: &Graph) -> bool {
-    // println!("sdgfdfs");
     for perm in Itertools::permutations((0..g.n_nodes), (g.n_nodes) as usize) {
         // dont need to both w the first perm. [0,1,2,3,4,5...]
 
