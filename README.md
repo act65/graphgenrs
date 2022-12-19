@@ -15,14 +15,14 @@ The main insight in this algorithm is that a minimal graph with k edges will hav
 
 Our goal is to generate all chemical structures given a molecular formula, subject to some constraints. We define 'chemical structure' to mean the bonding structure of the molecule (ie the existence of bonds between atoms, not 'stereo' or the 3D information).
 
-Graphs can be used to represent this bonding structure by equating the edges of a graph with chemical bonds [@Bonchev1991]. So, now we have translated the problem of generating structures into generating graphs.
+Graphs can be used to represent this bonding structure by equating the edges of a graph with chemical bonds [Bonchev 1991](https://books.google.co.nz/books?hl=en&lr=&id=X0AG7HhiccoC&oi=fnd&pg=PA1&dq=Chemical+Graph+Theory:+Introduction+and+Fundamentals+1st+edition++bonchev&ots=Rbwszc_diC&sig=snbS9Wz02RA29WXTyxnuAuQmCG4&redir_esc=y#v=onepage&q=Chemical%20Graph%20Theory%3A%20Introduction%20and%20Fundamentals%201st%20edition%20%20bonchev&f=false). So, now we have translated the problem of generating structures into generating graphs.
 
 However, a problem that occurs when attempting to generate graphs is: generating the 'same' graph multiple times. How can we avoid this, efficiently?
 
 A naive solution is to check whether the next graph is already in the set of generated graphs. If so, discard it, else, add it to the generated set.
 However, this solution requires checking each graph against all the graphs generated so far. This is expensive!
 
-A cheaper solution is; ordering and then enumerating the graphs. By generating the graphs in order, it is not possible to repeat the same graph. [@Meringer2010]
+A cheaper solution is; ordering and then enumerating the graphs. By generating the graphs in order, it is not possible to repeat the same graph. [Meringer 2010](http://nozdr.ru/data/media/biblio/kolxoz/Ch/ChCm/Faulon%20J.L.,%20Bender%20A.%20(eds.)%20Handbook%20of%20chemoinformatics%20algorithms%20(CRC,%202010)(ISBN%201420082922)(ISBN%201420082922)(O)(435s)_ChCm_.pdf#page=246)
 
 #### Ordered edges
 
@@ -91,27 +91,18 @@ $$
 \forall \pi \in S_n : g \leq g_\pi
 $$
 
-It is known that every minimal graph representative with $n$ edges has a minimal subgraph with $n-1$ edges [@Read1978].
+It is known that every minimal graph representative with $n$ edges has a minimal subgraph with $n-1$ edges [Read 1978](https://www.sciencedirect.com/science/article/abs/pii/S016750600870325X).
 This means that as we construct graphs by adding edges, we only need to pay attention to the minimal graphs, the rest can be ignored as they are not canonical.
 
 #### The orderly enumeration algorithm
 
-Now we are ready to describe the orderly enumeration algorithm [@Meringer2010].
+Now we are ready to describe the orderly enumeration algorithm [Meringer 2010](http://nozdr.ru/data/media/biblio/kolxoz/Ch/ChCm/Faulon%20J.L.,%20Bender%20A.%20(eds.)%20Handbook%20of%20chemoinformatics%20algorithms%20(CRC,%202010)(ISBN%201420082922)(ISBN%201420082922)(O)(435s)_ChCm_.pdf#page=246).
 As noted above, we only need to generate minimal graphs, the rest are not canonical.
 So, we start with the smallest graph, a graph with no edges, and proceed by adding larger edges, in order.
 As we add edges, we check whether the constructed graph is minimal, if it isn't, we discard it.
 This process is visualised below.
 
-\begin{figure}[h!]
-\centering
-\includegraphics[origin=c,width=0.5\textwidth]{assets/graphgen-alg.png}
-\caption{The orderly enumeration algorithm. Proceed in loops, recursively adding edges to graphs.}
-\label{fig:method}
-\end{figure}
+![The orderly enumeration algorithm. Proceed in loops, recursively adding edges to graphs.](assets/graphgen-alg.png)
 
-\begin{figure}[h!]
-\centering
-\includegraphics[origin=c]{assets/generation-tree.png}
-\caption{An example of graph enumeration. The graphs are constructed by adding larger, and larger edges. Non-canonical graphs, circled in red, are not continued. }
-\label{fig:method}
-\end{figure}
+
+![An example of graph enumeration. The graphs are constructed by adding larger, and larger edges. Non-canonical graphs, circled in red, are not continued.](assets/generation-tree.png)
