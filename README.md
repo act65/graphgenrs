@@ -1,23 +1,15 @@
 Implementation of orderly enumeration of graphs.
 
-Edges are given an order. This is used to order the graphs and allows us to define canonicity via the smallest graph (the 'minimal' graph).
-The main insight in this algorithm is that a minimal graph with k edges will have a k-1 sub graph that is also minimal. Thus we can enumerate by adding edges to only the minimal graphs.
-
 ## Limitations;
 
+- Has a bug where some extra isomers are getting through (WIP).
 - Doesnt support any constraints.
 - Tests all permutations to filter out isomers.
 - Doesnt support parallel enumeration.
-- Has a bug where some extra isomers are getting through.
-
 
 ## Background on the orderly enumeration of graphs
 
-Our goal is to generate all chemical structures given a molecular formula, subject to some constraints. We define 'chemical structure' to mean the bonding structure of the molecule (ie the existence of bonds between atoms, not 'stereo' or the 3D information).
-
-Graphs can be used to represent this bonding structure by equating the edges of a graph with chemical bonds [Bonchev 1991](https://books.google.co.nz/books?hl=en&lr=&id=X0AG7HhiccoC&oi=fnd&pg=PA1&dq=Chemical+Graph+Theory:+Introduction+and+Fundamentals+1st+edition++bonchev&ots=Rbwszc_diC&sig=snbS9Wz02RA29WXTyxnuAuQmCG4&redir_esc=y#v=onepage&q=Chemical%20Graph%20Theory%3A%20Introduction%20and%20Fundamentals%201st%20edition%20%20bonchev&f=false). So, now we have translated the problem of generating structures into generating graphs.
-
-However, a problem that occurs when attempting to generate graphs is: generating the 'same' graph multiple times. How can we avoid this, efficiently?
+A problem that occurs when attempting to generate graphs is: generating the 'same' graph multiple times. How can we avoid this, efficiently?
 
 A naive solution is to check whether the next graph is already in the set of generated graphs. If so, discard it, else, add it to the generated set.
 However, this solution requires checking each graph against all the graphs generated so far. This is expensive!
